@@ -1,0 +1,464 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numerology Compatibility Matrix (2x3 Framework)</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-primary: #6366f1;
+            --accent-hover: #4f46e5;
+            --border-color: #334155;
+            
+            --comp-bg: #064e3b;
+            --comp-txt: #34d399;
+            --conf-bg: #7f1d1d;
+            --conf-txt: #fca5a5;
+            --neut-bg: #365314;
+            --neut-txt: #bef264;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 640px) {
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--accent-primary);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            margin-bottom: 0.4rem;
+            color: var(--text-muted);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background-color: #0f172a;
+            color: var(--text-main);
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .btn {
+            padding: 0.85rem 1.75rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--border-color);
+            color: var(--text-main);
+        }
+
+        .results-container {
+            display: none;
+        }
+
+        .results-header {
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #111827;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 0.65rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-complementary { background-color: var(--comp-bg); color: var(--comp-txt); }
+        .badge-conflicting { background-color: var(--conf-bg); color: var(--conf-txt); }
+        .badge-neutral { background-color: var(--neut-bg); color: var(--neut-txt); }
+
+        .cat-tag {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Numerology Compatibility Matrix</h1>
+        <p>Proprietary 2x3 Framework (Same / Different → Complementary / Conflicting / Neutral)</p>
+    </header>
+
+    <div class="input-grid">
+        <!-- Person A -->
+        <div class="card">
+            <h2>Person A</h2>
+            <div class="form-group">
+                <label for="nameA">Full Birth Name</label>
+                <input type="text" id="nameA" placeholder="e.g. Narendra Modi">
+            </div>
+            <div class="form-group">
+                <label for="dobA">Date of Birth</label>
+                <input type="date" id="dobA">
+            </div>
+        </div>
+
+        <!-- Person B -->
+        <div class="card">
+            <h2>Person B</h2>
+            <div class="form-group">
+                <label for="nameB">Full Birth Name</label>
+                <input type="text" id="nameB" placeholder="e.g. Giorgia Meloni">
+            </div>
+            <div class="form-group">
+                <label for="dobB">Date of Birth</label>
+                <input type="date" id="dobB">
+            </div>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button class="btn btn-primary" onclick="calculateCompatibility()">Calculate Grid</button>
+        <button class="btn btn-secondary" onclick="loadSampleData()">Load Sample Data</button>
+    </div>
+
+    <!-- Output Grid -->
+    <div class="results-container" id="results">
+        <div class="results-header">
+            <h2 id="pairTitle">Compatibility Output</h2>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Core Number</th>
+                        <th>Person A</th>
+                        <th>Person B</th>
+                        <th>Category & Effect</th>
+                        <th>Dynamic Summary</th>
+                    </tr>
+                </thead>
+                <tbody id="matrixBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Pythagorean Chart Mapping
+    const letterMap = {
+        a:1, j:1, s:1,
+        b:2, k:2, t:2,
+        c:3, l:3, u:3,
+        d:4, m:4, v:4,
+        e:5, n:5, w:5,
+        f:6, o:6, x:6,
+        g:7, p:7, y:7,
+        h:8, q:8, z:8,
+        i:9, r:9
+    };
+
+    const vowels = ['a', 'e', 'i', 'o', 'u'];
+
+    function reduceNum(n, keepMaster = true) {
+        if (keepMaster && (n === 11 || n === 22 || n === 33)) return n;
+        while (n > 9) {
+            let sum = 0;
+            String(n).split('').forEach(d => sum += parseInt(d));
+            n = sum;
+            if (keepMaster && (n === 11 || n === 22 || n === 33)) return n;
+        }
+        return n;
+    }
+
+    function calcLifePath(dobStr) {
+        if (!dobStr) return 0;
+        const [year, month, day] = dobStr.split('-').map(Number);
+        const redDay = reduceNum(day);
+        const redMonth = reduceNum(month);
+        const redYear = reduceNum(year);
+        return reduceNum(redDay + redMonth + redYear);
+    }
+
+    function calcBirthday(dobStr) {
+        if (!dobStr) return 0;
+        const day = parseInt(dobStr.split('-')[2]);
+        return reduceNum(day);
+    }
+
+    function parseName(nameStr) {
+        const clean = nameStr.toLowerCase().replace(/[^a-z]/g, '');
+        let total = 0, soul = 0, pers = 0;
+
+        for (let i = 0; i < clean.length; i++) {
+            const char = clean[i];
+            const val = letterMap[char] || 0;
+            total += val;
+            
+            let isVowel = vowels.includes(char);
+            if (char === 'y') {
+                const prev = clean[i-1];
+                const next = clean[i+1];
+                if ((!prev || !vowels.includes(prev)) && (!next || !vowels.includes(next))) {
+                    isVowel = true;
+                }
+            }
+
+            if (isVowel) soul += val;
+            else pers += val;
+        }
+
+        return {
+            expression: reduceNum(total),
+            soulUrge: reduceNum(soul),
+            personality: reduceNum(pers)
+        };
+    }
+
+    function evaluatePair(numType, valA, valB) {
+        const same = (valA === valB);
+        let category = same ? "Category 1: Same" : "Category 2: Different";
+        let effect = "Neutral";
+        let summary = "";
+
+        if (numType === 'Life Path') {
+            if (same) {
+                effect = "Complementary";
+                summary = "Shared life trajectory creates immediate mutual understanding and alignment.";
+            } else {
+                effect = "Conflicting";
+                summary = "Distinct core motivations and life goals require intentional compromise.";
+            }
+        } else if (numType === 'Birthday') {
+            if (same) {
+                effect = "Neutral";
+                summary = "Shared baseline talents operating comfortably in parallel.";
+            } else {
+                effect = "Neutral";
+                summary = "Different natural habits that exist side-by-side without major friction.";
+            }
+        } else if (numType === 'Expression') {
+            if (same) {
+                effect = "Neutral";
+                summary = "Similar overall capability and approach to work.";
+            } else {
+                effect = "Complementary";
+                summary = "Diverse talents and skill sets that balance out collective goals.";
+            }
+        } else if (numType === 'Soul Urge') {
+            if (same) {
+                effect = "Complementary";
+                summary = "Deep emotional alignment and identical inner motivations.";
+            } else {
+                effect = "Complementary";
+                summary = "Different inner needs that balance and support each other's inner growth.";
+            }
+        } else if (numType === 'Personality') {
+            if (same) {
+                effect = "Neutral";
+                summary = "Identical outer demeanor; comfortable familiarity in public.";
+            } else {
+                effect = "Complementary";
+                summary = "Distinct outward styles that offer balanced perspective in daily interaction.";
+            }
+        }
+
+        return { category, effect, summary };
+    }
+
+    function calculateCompatibility() {
+        const nameA = document.getElementById('nameA').value;
+        const dobA = document.getElementById('dobA').value;
+        const nameB = document.getElementById('nameB').value;
+        const dobB = document.getElementById('dobB').value;
+
+        if (!nameA || !dobA || !nameB || !dobB) {
+            alert('Please fill out all fields for both Person A and Person B.');
+            return;
+        }
+
+        const dataA = {
+            lifePath: calcLifePath(dobA),
+            birthday: calcBirthday(dobA),
+            ...parseName(nameA)
+        };
+
+        const dataB = {
+            lifePath: calcLifePath(dobB),
+            birthday: calcBirthday(dobB),
+            ...parseName(nameB)
+        };
+
+        const pairs = [
+            { name: "Life Path", a: dataA.lifePath, b: dataB.lifePath },
+            { name: "Birthday", a: dataA.birthday, b: dataB.birthday },
+            { name: "Expression", a: dataA.expression, b: dataB.expression },
+            { name: "Soul Urge", a: dataA.soulUrge, b: dataB.soulUrge },
+            { name: "Personality", a: dataA.personality, b: dataB.personality }
+        ];
+
+        document.getElementById('pairTitle').innerText = `${nameA} & ${nameB}`;
+        const tbody = document.getElementById('matrixBody');
+        tbody.innerHTML = '';
+
+        pairs.forEach(pair => {
+            const result = evaluatePair(pair.name, pair.a, pair.b);
+            const badgeClass = `badge-${result.effect.toLowerCase()}`;
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><strong>${pair.name}</strong></td>
+                <td>${pair.a}</td>
+                <td>${pair.b}</td>
+                <td>
+                    <span class="badge ${badgeClass}">${result.effect}</span>
+                    <span class="cat-tag">${result.category}</span>
+                </td>
+                <td>${result.summary}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        document.getElementById('results').style.display = 'block';
+    }
+
+    function loadSampleData() {
+        document.getElementById('nameA').value = "Narendra Modi";
+        document.getElementById('dobA').value = "1950-09-17";
+        document.getElementById('nameB').value = "Giorgia Meloni";
+        document.getElementById('dobB').value = "1977-01-15";
+        calculateCompatibility();
+    }
+</script>
+
+</body>
+</html>
+
